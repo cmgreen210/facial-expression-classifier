@@ -25,12 +25,13 @@ setup(
     packages=["fec", "fec.classifier", "fec.media", "fec.test"],
 
     # Include additional files into the package
-    package_data = {
+    package_data={
         'fec.classifier': ['data/*.xml'],
-        'fec.test': ['data/*', 'data/gl_mdl/*', 'data/img_10/*']
+        'fec.test': ['data/*', 'data/gl_mdl/dir_archive.ini',
+                     'data/gl_mdl/objects.bin', 'data/img_10/*']
     },
     # Details
-    url="https://github.com/cmgreen210/face-django_expression-classifier",
+    url="https://github.com/cmgreen210/fec",
 
     #
     # license="LICENSE.txt",
