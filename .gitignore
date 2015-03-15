@@ -1,0 +1,15 @@
+db.sqlite3
+.idea/*
+*.pyc
+tmp*/
+*.pkl
+*.npy
+checkpoint/*
+.DS_Store
+*~
+setup_aws.sh
+media/*
+build/*
+django-facial-expression/build/*
+face-emotion-classifier/build/*
+venv/*

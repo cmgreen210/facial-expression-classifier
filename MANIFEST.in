@@ -1,0 +1,2 @@
+recursive-include fec/classifier/data *
+recursive-include fec/test/data *
