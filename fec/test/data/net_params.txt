@@ -1,4 +1,0 @@
-learning_rate, 0.1, f
-batch_size, 256,i
-learning_rate_schedule, constant  ,
-subtract_mean, False,b
