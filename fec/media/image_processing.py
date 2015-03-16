@@ -50,7 +50,7 @@ class FaceDetectorProcessor(ImageProcessor):
 
     def __init__(self, cascade_file='haarcascade_frontalface_alt.xml',
                  return_largest=True, scale_x=1.5, scale_y=1.5, shape=None,
-                 add_rectangle=True, rect_color=(91, 192, 222)):
+                 add_rectangle=True, rect_color=(222, 192, 91)):
         self.detector = FaceDetector(cascade_file,
                                      return_largest=return_largest)
 
@@ -94,4 +94,8 @@ def run_face_detector(image):
 if __name__ == '__main__':
     fd_proces = FaceDetectorProcessor()
     img = cv2.imread('/Users/chris/face-emotion-classifier/media/ZoyNE2Ww5Z/1-frame.png')
-    fd_proces.process_image(img)
+    img, _ = fd_proces.process_image(img)
+
+    cv2.imshow('img', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
