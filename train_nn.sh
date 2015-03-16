@@ -7,6 +7,7 @@ MODEL=$1
 MAX_IT=$2
 DATA=$3
 EMAIL=$4
+BUCKET=$5
 
 PY='/usr/bin/python'
 
@@ -39,4 +40,4 @@ TAR_OUTPUT="${OUT_DIR}.tar.gz"
 tar -zcvf "${TAR_OUTPUT}" "${OUT_DIR}"
 
 cat "${OUT_DIR}/results.txt" | mutt -s "NN Training Run" -- "${EMAIL}"
-aws s3 cp "${TAR_OUTPUT}" "s3://cmgreen210-emotions/"
+aws s3 cp "${TAR_OUTPUT}" "s3://${BUCKET}"
