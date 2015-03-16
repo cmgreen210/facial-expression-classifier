@@ -1,5 +1,6 @@
 from fec.media.image_processing import FaceDetectorProcessor
 import graphlab as gl
+import numpy as np
 
 
 class ImageFileClassifier(object):
@@ -15,7 +16,11 @@ class ImageFileClassifier(object):
         if face is None:
             return None
 
-        face_arr = gl.SArray([face.flatten().tolist()])
+        face = face.flatten()
+        face = face - np
+        face /= np.std(face)
+
+        face_arr = gl.SArray([face.tolist()])
         clf_image = face_arr.pixel_array_to_image(h, w, channels)
         x = gl.SFrame({'images': clf_image})
         classifications = self._classifier(x)
