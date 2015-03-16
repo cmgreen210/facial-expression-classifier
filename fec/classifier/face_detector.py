@@ -17,7 +17,7 @@ class FaceDetector(object):
     return_largest : returns the largest found face
     """
     def __init__(self, cascade_file, scale_factor=1.1,
-                 min_neighbors=3, min_size=(20, 20),
+                 min_neighbors=5, min_size=(20, 20),
                  return_largest=False):
 
         self.cascade_file = cascade_file
