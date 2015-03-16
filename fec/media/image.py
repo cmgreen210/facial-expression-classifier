@@ -20,8 +20,14 @@ class ImageFileClassifier(object):
         face = face - np.mean(face)
         face /= np.std(face)
 
+        fmin = np.min(face)
+        fmax = np.max(face)
+
+        face = 255 * (face - fmin) / (fmax - fmin)
+
         face_arr = gl.SArray([face.tolist()])
-        clf_image = face_arr.pixel_array_to_image(h, w, channels)
+        clf_image = face_arr.pixel_array_to_image(h, w, channels,
+                                                  allow_rounding=True)
         x = gl.SFrame({'images': clf_image})
         classifications = self._classifier(x)
         return image, clf_image[0], classifications
