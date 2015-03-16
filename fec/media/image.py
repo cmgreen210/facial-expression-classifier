@@ -11,7 +11,7 @@ class ImageFileClassifier(object):
     def classify(self, path, h=48, w=48, channels=1):
         image = gl.Image(path)
         data = image.pixel_data.copy()
-        _, face = self._image_processor.process_image(data)
+        image, face = self._image_processor.process_image(data)
         if face is None:
             return None
 
