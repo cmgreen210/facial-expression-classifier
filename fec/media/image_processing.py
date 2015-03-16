@@ -49,7 +49,8 @@ class ResizeProcessor(ImageProcessor):
 class FaceDetectorProcessor(ImageProcessor):
 
     def __init__(self, cascade_file='haarcascade_frontalface_alt.xml',
-                 return_largest=True, scale_x=1.5, scale_y=1.5, shape=None):
+                 return_largest=True, scale_x=1.5, scale_y=1.5, shape=None,
+                 add_rectangle=True, rect_color = (91,192,222)):
         self.detector = FaceDetector(cascade_file,
                                      return_largest=return_largest)
 
@@ -58,6 +59,9 @@ class FaceDetectorProcessor(ImageProcessor):
         self.scale_x = scale_x
         self.scale_y = scale_y
         self.shape = shape
+
+        self.add_rectangle = add_rectangle
+        self.rect_color = rect_color
 
     def process_image(self, image, *args):
         gray = self.preprocessor.process_image(image, *args)
@@ -74,6 +78,11 @@ class FaceDetectorProcessor(ImageProcessor):
 
         gray = gray[y:y+h_new, x:x+w_new]
         gray = self.postprocessor.process_image(gray)
+
+        if self.add_rectangle:
+            cv2.rectangle(image, (x, y), (x + w_new, y + h_new),
+                          self.rect_color, 2)
+
         return image, gray
 
 
