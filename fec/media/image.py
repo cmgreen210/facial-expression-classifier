@@ -17,7 +17,7 @@ class ImageFileClassifier(object):
             return None
 
         face = face.flatten()
-        face = face - np
+        face = face - np.mean(face)
         face /= np.std(face)
 
         face_arr = gl.SArray([face.tolist()])
