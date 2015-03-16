@@ -27,7 +27,8 @@ setup(
     # Include additional files into the package
     package_data={
         'fec.classifier': ['data/*.xml'],
-        'fec.test': ['data/*.txt', 'data/gl_mdl/dir_archive.ini',
+        'fec.test': ['data/*.txt', 'data/*.jpg', 'data/*.npx',
+                     'data/gl_mdl/dir_archive.ini',
                      'data/gl_mdl/objects.bin', 'data/img_10/*']
     },
     # Details
