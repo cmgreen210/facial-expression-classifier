@@ -42,7 +42,6 @@ class GraphLabNeuralNetBuilder(object):
             stride=stride, **kwargs
         )
         self.layers.append(conv_layer)
-        return
 
     def add_max_pooling_layer(self, kernel_size, stride=1, padding=0):
         """Add a max pooling layer to the neural net
@@ -55,7 +54,6 @@ class GraphLabNeuralNetBuilder(object):
             kernel_size=kernel_size, stride=stride, padding=padding
         )
         self.layers.append(pool_layer)
-        return
 
     def add_avg_pooling_layer(self, kernel_size, stride=1, padding=0):
         """Add an average pooling layer to the neural net
@@ -68,7 +66,6 @@ class GraphLabNeuralNetBuilder(object):
             kernel_size=kernel_size, stride=stride, padding=padding
         )
         self.layers.append(pool_layer)
-        return
 
     def add_flatten_layer(self):
         """Add a flattening layer to the neural net
@@ -78,7 +75,6 @@ class GraphLabNeuralNetBuilder(object):
         self.layers.append(
             gl.deeplearning.layers.FlattenLayer()
         )
-        return
 
     def add_full_connection_layer(self, num_hidden_units,
                                   init_bias=0, init_sigma=0.01,
