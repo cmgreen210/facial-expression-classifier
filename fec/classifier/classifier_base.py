@@ -4,33 +4,33 @@ import numpy as np
 
 
 class ClassifierBase(object):
-    """
+    """Abstract base class for facial emotion classifiers
 
     """
     __metaclass__ = ABCMeta
 
     @abstractmethod
     def fit(self, x, y):
-        """
+        """Abstract fit method
 
-        :param x:
-        :param y:
+        :param x: feature matrix
+        :param y: array of class labels
         :return:
         """
         pass
 
     @abstractmethod
     def predict(self, x):
-        """
+        """Predict classes from features
 
-        :param x:
+        :param x: feature matrix
         :return:
         """
         pass
 
     @abstractmethod
     def predict_proba(self, x):
-        """
+        """Predict classes as well as return prediction probabilities
 
         :param x:
         :return:
@@ -39,14 +39,14 @@ class ClassifierBase(object):
 
 
 class DummyClassifier(ClassifierBase):
-    """
+    """Dummy Clasiifier for testings
 
     """
     def __init__(self, n):
         self._n = n
 
     def fit(self, x, y):
-        """
+        """Method does nothing!
 
         :param x:
         :param y:
@@ -55,7 +55,7 @@ class DummyClassifier(ClassifierBase):
         pass
 
     def predict(self, x):
-        """
+        """Method does nothing!
 
         :param x:
         :return:
@@ -65,7 +65,7 @@ class DummyClassifier(ClassifierBase):
         return np.random.randint(0, self._n, size=x.shape[0])
 
     def predict_proba(self, x):
-        """
+        """Predicts uniform probability
         :param x:
         :return:
         """
