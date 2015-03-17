@@ -3,6 +3,8 @@
 # MODEL is the path to the neural net config
 # MAX_IT is the maximum number of iterations
 # DATA Path to pickled fer files
+# EMAIL results will be sent to this address
+# BUCKET s3 bucket to save all data to
 MODEL=$1
 MAX_IT=$2
 DATA=$3
