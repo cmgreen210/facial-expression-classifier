@@ -33,6 +33,16 @@ def fix_net_conf(path):
     f.close()
 
 
+def assemble_data_frame(path):
+    df = pd.read_pickle(path)
+
+    cond_happy = df['django_expression'] == 3
+    cond_sad = df['django_expression'] == 4
+    cond_surprise = df['django_expression'] == 5
+
+    return df[cond_happy | cond_sad | cond_surprise]
+
+
 if __name__ == '__main__':
     net_conf_path = sys.argv[1]
     fix_net_conf(net_conf_path)
@@ -47,13 +57,11 @@ if __name__ == '__main__':
     data_path = sys.argv[3]
     max_iterations = int(sys.argv[4])
 
-    df = pd.read_pickle(data_path)
+    cross_validation = None
+    if len(sys.argv) > 5:
+        cross_validation = int(sys.argv[6])
 
-    cond_happy = df['django_expression'] == 3
-    cond_sad = df['django_expression'] == 4
-    cond_surprise = df['django_expression'] == 5
-
-    df = df[cond_happy | cond_sad | cond_surprise]
+    df = assemble_data_frame(data_path)
 
     x = np.array(df['pixels'].tolist())
     y = np.array(df['django_expression'].values)

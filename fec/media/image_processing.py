@@ -47,8 +47,10 @@ class GrayScaleProcessor(ImageProcessor):
         :param image: image as an array
         :return: image converted to grayscale
         """
-
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        if len(image.shape) == 2:
+            gray = image
+        else:
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
         return gray
 
