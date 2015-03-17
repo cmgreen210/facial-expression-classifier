@@ -2,7 +2,7 @@ import graphlab as gl
 
 
 class GraphLabNeuralNetBuilder(object):
-    """
+    """Wrapper for GraphLab NeuralNet class to ease construction of NN
 
     """
     def __init__(self):
@@ -10,31 +10,33 @@ class GraphLabNeuralNetBuilder(object):
         self.net = gl.deeplearning.NeuralNet()
 
     def get_net(self):
-        """
+        """Return the net
 
-        :return:
+        This method verifies that the internal net is valid. If it isn't
+        an exception is thrown.
+
+        :return: graphlab nn
         """
         self.net.layers = self.layers
         self.net.verify()
         return self.net
 
     def verify(self):
-        """
+        """Verify that the underlying neural net is valid
 
-        :return:
+        :return: True otherwise an exception is thrown
         """
         self.net.layers = self.layers
         return self.net.verify()
 
     def add_convolution_layer(self, kernel_size,
                               stride, num_channels, **kwargs):
-        """
+        """Add a convolution layer to the net
 
-        :param kernel_size:
-        :param stride:
-        :param num_channels:
+        :param kernel_size: size of convolution kernel
+        :param stride: stride of kernel
+        :param num_channels: number of output filters
         :param kwargs:
-        :return:
         """
         conv_layer = gl.deeplearning.layers.ConvolutionLayer(
             kernel_size=kernel_size, num_channels=num_channels,
@@ -44,12 +46,11 @@ class GraphLabNeuralNetBuilder(object):
         return
 
     def add_max_pooling_layer(self, kernel_size, stride=1, padding=0):
-        """
+        """Add a max pooling layer to the neural net
 
-        :param kernel_size:
-        :param stride:
-        :param padding:
-        :return:
+        :param kernel_size: size of the max pooling layer
+        :param stride: length of stride between kernels
+        :param padding: number of padding pixels around the data
         """
         pool_layer = gl.deeplearning.layers.MaxPoolingLayer(
             kernel_size=kernel_size, stride=stride, padding=padding
@@ -58,12 +59,11 @@ class GraphLabNeuralNetBuilder(object):
         return
 
     def add_avg_pooling_layer(self, kernel_size, stride=1, padding=0):
-        """
+        """Add an average pooling layer to the neural net
 
-        :param kernel_size:
-        :param stride:
-        :param padding:
-        :return:
+        :param kernel_size: size of the average pooling layer
+        :param stride: length of stride between kernels
+        :param padding: number of padding pixels around the data
         """
         pool_layer = gl.deeplearning.layers.AveragePoolingLayer(
             kernel_size=kernel_size, stride=stride, padding=padding
@@ -72,9 +72,9 @@ class GraphLabNeuralNetBuilder(object):
         return
 
     def add_flatten_layer(self):
-        """
+        """Add a flattening layer to the neural net
 
-        :return:
+        This method must be called before adding a fully connected layer
         """
         self.layers.append(
             gl.deeplearning.layers.FlattenLayer()

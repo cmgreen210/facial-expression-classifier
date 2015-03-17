@@ -10,9 +10,12 @@ _conn = None
 
 
 def get_connection():
-    """
+    """Get the boto connection to Amazon S3
 
-    :return:
+    This method assumes the environment variables AWS_ACCESS_KEY_ID and
+    AWS_SECRET_ACCESS_KEY have been set
+
+    :return: s3 connection
     """
     global _conn
     if _conn is None:
@@ -22,10 +25,10 @@ def get_connection():
 
 
 def upload_big_file(source_path, bucket):
-    """
+    """Upload a large file to S3 in chunks
 
-    :param source_path:
-    :param bucket:
+    :param source_path: path to the file
+    :param bucket: s3 bucket string to load to
     :return:
     """
     source_size = os.stat(source_path).st_size
