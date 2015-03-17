@@ -76,21 +76,26 @@ class ResizeProcessor(ImageProcessor):
 
 
 class FaceDetectorProcessor(ImageProcessor):
-    """
+    """Image processor that detects attempts to detect a single face
+
+    Parameters
+    ----------
+    cascade_file: path to haar cascade opencv trained file
+    scale_x: amount to scale rectangle of face found in horizontal direction
+    scale_y: amount to scale rectangle of face found in vertical direction
+    add_rectangle: bool should we add the found face rectangle to the image
+    rect_color: the color of the face rectangle outline
 
     """
-
     def __init__(self, cascade_file='haarcascade_frontalface_alt.xml',
-                 return_largest=True, scale_x=1.5, scale_y=1.5, shape=None,
+                 scale_x=1.5, scale_y=1.5,
                  add_rectangle=True, rect_color=(222, 192, 91)):
-        self.detector = FaceDetector(cascade_file,
-                                     return_largest=return_largest)
+        self.detector = FaceDetector(cascade_file)
 
         self.preprocessor = GrayScaleProcessor()
         self.postprocessor = ResizeProcessor()
         self.scale_x = scale_x
         self.scale_y = scale_y
-        self.shape = shape
 
         self.add_rectangle = add_rectangle
         self.rect_color = rect_color
