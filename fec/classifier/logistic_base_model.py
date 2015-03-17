@@ -11,8 +11,11 @@ from sklearn.metrics import accuracy_score
 
 
 class LogisticBaseModel(ClassifierBase):
-    """
+    """Basic Logistic Classifier
 
+    Parameters
+    ----------
+    :param pre_process_pipelin: sklearn pipeline
     """
     def __init__(self, pre_process_pipeline=None, **kwargs):
         if pre_process_pipeline is None:
@@ -24,43 +27,40 @@ class LogisticBaseModel(ClassifierBase):
             self._model = Pipeline(pre_process_pipeline)
 
     def fit(self, x, y):
-        """
+        """Fit the logistic model
 
-        :param x:
-        :param y:
-        :return:
+        :param x: feature matrix
+        :param y: labels
         """
         self._model.fit(x, y)
 
     def predict(self, x):
-        """
+        """Predict labels from inputted features
 
-        :param x:
-        :return:
+        :param x: array of features
+        :return: array of class prediction
         """
         return self._model.predict(x)
 
     def predict_proba(self, x):
-        """
+        """Predict classes and corresponding probabilities for features x
 
-        :param x:
-        :return:
+        :param x: array of features
+        :return: classes and probabilities array
         """
         return self._model.predict(x)
 
     def save(self, path):
-        """
+        """Save this model as pickle
 
-        :param path:
-        :return:
+        :param path: path to pickle model
         """
         joblib.dump(self._model, path)
 
     def load(self, path):
-        """
+        """Load pickled model to this one
 
-        :param path:
-        :return:
+        :param path: path of already pickled model
         """
         self._model = joblib.load(path)
 
