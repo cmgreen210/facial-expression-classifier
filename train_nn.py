@@ -8,11 +8,36 @@ from fec.classifier.gl_classifier import GraphLabClassifierFromNetBuilder
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import precision_score, f1_score
 from os.path import join as pjoin
+import StringIO
+
+
+def fix_net_conf(path):
+    """Fix net layer connection numbers
+
+    :param path: path to net config
+    """
+    f = open(path, 'r')
+    layer_count = 0
+    output = StringIO.StringIO()
+    for line in f.readlines():
+        if 'layer' in line:
+            layer_line = line.split('=')
+            layer = 'layer[' + str(layer_count) +\
+                    "->" + str(layer_count+1) + ']'
+            line = layer + " =" + layer_line[1]
+            layer_count += 1
+        output.write(line)
+    f.close()
+    f = open(path, 'w')
+    f.write(output.getvalue())
+    f.close()
 
 
 if __name__ == '__main__':
+    net_conf_path = sys.argv[1]
+    fix_net_conf(net_conf_path)
 
-    net = gl.deeplearning.NeuralNet(url=sys.argv[1])
+    net = gl.deeplearning.NeuralNet(url=net_conf_path)
     if not net.verify():
         print("Invalid neural net! Exiting....")
 

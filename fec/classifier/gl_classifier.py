@@ -55,6 +55,8 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
     ----------
     net_builder: A GraphLabNeuralNetBuilder object with a valid net
     train_frac: fraction of dataset used for training as opposed to validation
+    validation_set: tuple for validation (x, y) if is None then validation set
+                    is sampled from training set during call to fit
     h: Height of images
     w: Width of images
     d: Depth of images
@@ -64,11 +66,14 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
     verbose: Output verbosity
     chkpt_dir: Location to store intermediary models
     """
-    def __init__(self, net_builder, train_frac=.8, h=48, w=48, depth=1,
+    def __init__(self, net_builder, train_frac=.8, validation_set=None,
+                 h=48, w=48, depth=1,
                  target='label', feat_name='images',
                  max_iterations=50, verbose=True, chkpt_dir=''):
         self._net_builder = net_builder
         self._model = None
+
+        self._validation_set = validation_set
 
         self._feat_means = None
         self._feat_std = None
@@ -129,7 +134,14 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         :param y: array of labels
         :return:
         """
-        x_train, y_train, x_valid, y_valid = self._split(x, y)
+        if self._validation_set is None:
+            x_train, y_train, x_valid, y_valid = self._split(x, y)
+        else:
+            x_train = x
+            y_train = y
+            x_valid = self._validation_set[0]
+            y_valid = self._validation_set[1]
+
         self._feat_means = np.mean(x_train, axis=0)
         self._feat_std = np.std(x_train, axis=0)
 
@@ -153,8 +165,6 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
                     'recall@1'
                     ]
         )
-
-        return
 
     def _create_gl_feature_mat(self, x):
         scale_x = self._scale_features(x)
