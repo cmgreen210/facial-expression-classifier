@@ -8,7 +8,6 @@ from fec.classifier.gl_classifier import GraphLabClassifierFromNetBuilder
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import precision_score, f1_score
 from os.path import join as pjoin
-import os.path as opath
 
 
 if __name__ == '__main__':
