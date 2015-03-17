@@ -101,11 +101,11 @@ class FaceDetectorProcessor(ImageProcessor):
         self.rect_color = rect_color
 
     def process_image(self, image, *args):
-        """
+        """Process the input image by scaling, graying, and finding a face
 
-        :param image:
-        :param args:
-        :return:
+        :param image: an array
+        :param args: processor arguments
+        :return: tuple  the processed image and the grayscale version
         """
         gray = self.preprocessor.process_image(image, *args)
 
