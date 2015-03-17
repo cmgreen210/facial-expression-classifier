@@ -50,7 +50,6 @@ if __name__ == '__main__':
     x = np.array(df['pixels'].tolist())
     y = np.array(df['django_expression'].values)
 
-
     row_means = np.mean(x, axis=1)
     x -= row_means[:, np.newaxis]
 

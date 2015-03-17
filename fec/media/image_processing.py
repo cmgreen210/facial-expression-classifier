@@ -89,13 +89,3 @@ class FaceDetectorProcessor(ImageProcessor):
 def run_face_detector(image):
     detector = FaceDetectorProcessor()
     detector.process_image(image)
-
-
-if __name__ == '__main__':
-    fd_proces = FaceDetectorProcessor()
-    img = cv2.imread('/Users/chris/face-emotion-classifier/media/ZoyNE2Ww5Z/1-frame.png')
-    img, _ = fd_proces.process_image(img)
-
-    cv2.imshow('img', img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
