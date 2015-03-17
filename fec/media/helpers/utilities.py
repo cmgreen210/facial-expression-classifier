@@ -4,12 +4,12 @@ import cv2
 
 
 def load_np_clf_data(path, fraction=None, seed=None):
-    """
+    """Load compressed numpy model data
 
-    :param path:
-    :param fraction:
-    :param seed:
-    :return:
+    :param path: path to data
+    :param fraction: fraction of data to randomly select
+    :param seed: random seed
+    :return: tuple of images and corresponding target labels
     """
     files = np.load(path)
 
@@ -26,12 +26,12 @@ def load_np_clf_data(path, fraction=None, seed=None):
 
 
 def get_sub_sample_idx(fraction, n, seed=None):
-    """
+    """Get random subsample indices
 
-    :param fraction:
-    :param n:
-    :param seed:
-    :return:
+    :param fraction: fraction of subsample
+    :param n: total sample seed
+    :param seed: random seed
+    :return: array of indices
     """
     if fraction > 1 or fraction <= 0:
         raise ValueError('fraction must be in (0, 1]!')
@@ -46,14 +46,14 @@ def get_sub_sample_idx(fraction, n, seed=None):
 
 def assemble_dataset(train_path, validation_path, test_path,
                      fraction=None, seed=None):
-    """
+    """Create tuple dataset of training, validation and testing data
 
-    :param train_path:
-    :param validation_path:
-    :param test_path:
-    :param fraction:
-    :param seed:
-    :return:
+    :param train_path: path of training data
+    :param validation_path: path of validation data
+    :param test_path: path of testing data
+    :param fraction: amount of each category to sample
+    :param seed: random number seed
+    :return: tuple of training, validation and testing data
     """
     dataset = [None, None, None]
     dataset[0] = load_np_clf_data(train_path, fraction=fraction, seed=seed)
@@ -64,19 +64,18 @@ def assemble_dataset(train_path, validation_path, test_path,
 
 
 def display_image(img):
-    """
+    """Display image from numpy array
 
-    :param img:
-    :return:
+    :param img: numpy array
     """
     Image.fromarray(np.uint8(img)).show()
 
 
 def flip_image(image, dir='h'):
-    """
+    """Flip image (numpy array)
 
-    :param image:
-    :param dir:
+    :param image: array
+    :param dir: direction to flip, either horizontal 'h' or vertical 'v'
     :return:
     """
     if dir == 'h':
@@ -88,24 +87,24 @@ def flip_image(image, dir='h'):
 
 
 def get_rotation_matrix(cols, rows, degrees=0, scaling=1):
-    """
+    """Get an image rotation matrix
 
-    :param cols:
-    :param rows:
-    :param degrees:
-    :param scaling:
-    :return:
+    :param cols: target cols
+    :param rows: target rows
+    :param degrees: degrees of rotation
+    :param scaling: amount of scaling
+    :return: rotation matrix
     """
     m = cv2.getRotationMatrix2D((cols/2, rows/2), degrees, scaling)
     return m
 
 
 def rotate_image(image, rot_mat):
-    """
+    """Rotate image
 
-    :param image:
-    :param rot_mat:
-    :return:
+    :param image: array image
+    :param rot_mat: rotation array
+    :return: rotated image
     """
     return cv2.warpAffine(image, rot_mat, image.shape)
 
