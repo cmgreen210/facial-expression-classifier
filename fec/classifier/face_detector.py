@@ -31,7 +31,7 @@ class FaceDetector(object):
         self.return_largest = return_largest
 
     def _set_up_face_detector(self):
-        """
+        """Make sure face detector input is valid
         :return:
         """
         path = os.path.dirname(__file__)
