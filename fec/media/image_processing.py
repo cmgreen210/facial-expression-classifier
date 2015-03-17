@@ -6,14 +6,21 @@ from math import floor
 
 
 class ImageProcessor(object):
+    """
+
+    """
     def __init__(self):
         pass
 
     def process_image(self, image, *args):
-        #  self.save_image(image)
         return image
 
     def save_image(self, image):
+        """
+
+        :param image:
+        :return:
+        """
         file_name = os.path.dirname(__file__)
         dir_name = os.path.join(file_name, 'tmp')
         if not os.path.exists(dir_name):
@@ -25,10 +32,19 @@ class ImageProcessor(object):
 
 
 class GrayScaleProcessor(ImageProcessor):
+    """
+
+    """
     def __init__(self):
         pass
 
     def process_image(self, image, *args):
+        """
+
+        :param image:
+        :param args:
+        :return:
+        """
 
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -36,6 +52,9 @@ class GrayScaleProcessor(ImageProcessor):
 
 
 class ResizeProcessor(ImageProcessor):
+    """
+
+    """
     def __init__(self, dim=(48, 48), interp=cv2.INTER_AREA):
         self.dim = dim
         self.interp = interp
@@ -47,6 +66,9 @@ class ResizeProcessor(ImageProcessor):
 
 
 class FaceDetectorProcessor(ImageProcessor):
+    """
+
+    """
 
     def __init__(self, cascade_file='haarcascade_frontalface_alt.xml',
                  return_largest=True, scale_x=1.5, scale_y=1.5, shape=None,
@@ -64,6 +86,12 @@ class FaceDetectorProcessor(ImageProcessor):
         self.rect_color = rect_color
 
     def process_image(self, image, *args):
+        """
+
+        :param image:
+        :param args:
+        :return:
+        """
         gray = self.preprocessor.process_image(image, *args)
 
         face = self.detector.detect_face(image)
@@ -84,8 +112,3 @@ class FaceDetectorProcessor(ImageProcessor):
                           self.rect_color, 2)
 
         return image, gray
-
-
-def run_face_detector(image):
-    detector = FaceDetectorProcessor()
-    detector.process_image(image)

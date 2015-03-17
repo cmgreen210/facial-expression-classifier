@@ -7,6 +7,10 @@ import graphlab as gl
 
 class GraphlabClassifierTest(unittest.TestCase):
     def test_graphlab_classifier(self):
+        """ Test the graphlab clasifier from file
+
+        :return:
+        """
 
         this_dir, _ = os.path.split(os.path.abspath(__file__))
         this_dir = os.path.abspath(this_dir)

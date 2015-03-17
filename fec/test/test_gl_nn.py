@@ -4,7 +4,8 @@ import os
 
 
 class GraphLabNeuralNetTest(unittest.TestCase):
-
+    """ Test all of the building methods for the GraphLab NN builder
+    """
     def test_convolution_layer(self):
         nn = GraphLabNeuralNetBuilder()
         nn.add_convolution_layer(3, 1, 10)

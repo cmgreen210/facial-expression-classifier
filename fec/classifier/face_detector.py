@@ -31,7 +31,9 @@ class FaceDetector(object):
         self.return_largest = return_largest
 
     def _set_up_face_detector(self):
-        """Set up the opencv haar face detector"""
+        """
+        :return:
+        """
         path = os.path.dirname(__file__)
         path = os.path.join(path, 'data', self.cascade_file)
         if not os.path.exists(path):

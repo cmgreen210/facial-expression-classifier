@@ -1,19 +1,16 @@
 import cv
 import cv2
 from multiprocessing.pool import ThreadPool
-import image_processing as imp
-from collections import deque
 from abc import ABCMeta, abstractmethod
 from collections import deque
 from fec.media.image_processing import FaceDetectorProcessor
-from fec.classifier.gl_classifier import GraphLabClassifierFromFile
-import os
 import graphlab as gl
-import shutil
-import numpy as np
 
 
 class VideoStreamClassifyBase(object):
+    """
+
+    """
     __metaclass__ = ABCMeta
 
     def __init__(self, classifier, frame_skip=20,
@@ -34,6 +31,10 @@ class VideoStreamClassifyBase(object):
         self.image_paths = None
 
     def get_classifications(self):
+        """
+
+        :return:
+        """
         return self._classifications
 
     def _setup_multithreaded(self):
@@ -41,6 +42,12 @@ class VideoStreamClassifyBase(object):
         self.thread_pool = ThreadPool(self.thread_num)
 
     def process_frame(self, frame, frame_count):
+        """
+
+        :param frame:
+        :param frame_count:
+        :return:
+        """
         while len(self.tasks) > 0 and self.tasks[0].ready():
             self.images.append(self.tasks.popleft().get())
 
@@ -53,18 +60,36 @@ class VideoStreamClassifyBase(object):
 
     @property
     def classifier(self):
+        """
+
+        :return:
+        """
         return self._classifier
 
     @classifier.setter
     def classifier(self, classifier):
+        """
+
+        :param classifier:
+        :return:
+        """
         self._classifier = classifier
 
     @property
     def frame_skip(self):
+        """
+
+        :return:
+        """
         return self._frame_skip
 
     @frame_skip.setter
     def frame_skip(self, frame_skip):
+        """
+
+        :param frame_skip:
+        :return:
+        """
         if frame_skip <= 0:
             raise ValueError('Frame skip most be positive!')
 
@@ -72,18 +97,33 @@ class VideoStreamClassifyBase(object):
 
     @abstractmethod
     def start(self):
+        """
+
+        :return:
+        """
         pass
 
     @abstractmethod
     def stop(self):
+        """
+
+        :return:
+        """
         pass
 
     @abstractmethod
     def clean_up(self):
+        """
+
+        :return:
+        """
         pass
 
 
 class CameraClassifier(VideoStreamClassifyBase):
+    """
+
+    """
     def __init__(self, classifier, frame_skip=20, source=0, name=""):
         super(CameraClassifier, self).__init__(classifier, frame_skip)
         self._source = source
@@ -91,7 +131,10 @@ class CameraClassifier(VideoStreamClassifyBase):
         self._name = name
 
     def start(self):
+        """
 
+        :return:
+        """
         self._capture = cv2.VideoCapture(self._source)
         frame_count = 0
         while self._capture.isOpened():
@@ -108,15 +151,27 @@ class CameraClassifier(VideoStreamClassifyBase):
         self.clean_up()
 
     def stop(self):
+        """
+
+        :return:
+        """
         return cv2.waitKey(1) & 0xFF == ord('q')
 
     def clean_up(self):
+        """
+
+        :return:
+        """
         if self._capture:
             self._capture.release()
 
         cv.DestroyAllWindows()
 
     def get_classifications(self):
+        """
+
+        :return:
+        """
         pass
 
     def _display_image(self, image):
@@ -128,6 +183,9 @@ VideoStreamClassifyBase.register(CameraClassifier)
 
 
 class VideoFileClassifier(VideoStreamClassifyBase):
+    """
+
+    """
     def __init__(self, classifier, source, frame_skip=20, name="",
                  h=48, w=48, d=1):
         super(VideoFileClassifier, self).__init__(classifier, frame_skip)
@@ -140,7 +198,10 @@ class VideoFileClassifier(VideoStreamClassifyBase):
         self._d = d
 
     def start(self):
+        """
 
+        :return:
+        """
         self._capture = cv2.VideoCapture(self._source)
         frame_count = 0
         while self._capture.isOpened():
@@ -154,9 +215,17 @@ class VideoFileClassifier(VideoStreamClassifyBase):
         self.clean_up()
 
     def stop(self):
+        """
+
+        :return:
+        """
         pass
 
     def clean_up(self):
+        """
+
+        :return:
+        """
         if self._capture:
             self._capture.release()
 
@@ -187,17 +256,34 @@ class VideoFileClassifier(VideoStreamClassifyBase):
                 self._classifications = self.classifier(x)
 
     def get_classifications(self):
+        """
+
+        :return:
+        """
         return self._classifications
 
     def get_final_images(self):
+        """
+
+        :return:
+        """
         return self.original_images, self.transformed_images
 
     @property
     def source(self):
+        """
+
+        :return:
+        """
         return self.source
 
     @source.setter
     def source(self, source):
+        """
+
+        :param source:
+        :return:
+        """
         self.source = source
 
 VideoStreamClassifyBase.register(VideoFileClassifier)

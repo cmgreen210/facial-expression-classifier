@@ -10,6 +10,10 @@ _conn = None
 
 
 def get_connection():
+    """
+
+    :return:
+    """
     global _conn
     if _conn is None:
         _conn = S3Connection(os.environ['AWS_ACCESS_KEY_ID'],
@@ -18,6 +22,12 @@ def get_connection():
 
 
 def upload_big_file(source_path, bucket):
+    """
+
+    :param source_path:
+    :param bucket:
+    :return:
+    """
     source_size = os.stat(source_path).st_size
     mp = bucket.initiate_multipart_upload(os.path.basename(source_path))
 

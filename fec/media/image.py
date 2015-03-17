@@ -4,12 +4,23 @@ import numpy as np
 
 
 class ImageFileClassifier(object):
+    """
+
+    """
 
     def __init__(self, classifier, image_processor=FaceDetectorProcessor()):
         self._classifier = classifier
         self._image_processor = image_processor
 
     def classify(self, path, h=48, w=48, channels=1):
+        """
+
+        :param path:
+        :param h:
+        :param w:
+        :param channels:
+        :return:
+        """
         image = gl.Image(path)
         data = image.pixel_data.copy()
         image, face = self._image_processor.process_image(data)

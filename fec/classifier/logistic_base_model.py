@@ -11,7 +11,9 @@ from sklearn.metrics import accuracy_score
 
 
 class LogisticBaseModel(ClassifierBase):
+    """
 
+    """
     def __init__(self, pre_process_pipeline=None, **kwargs):
         if pre_process_pipeline is None:
             self._model = LogisticRegression(**kwargs)
@@ -22,18 +24,44 @@ class LogisticBaseModel(ClassifierBase):
             self._model = Pipeline(pre_process_pipeline)
 
     def fit(self, x, y):
+        """
+
+        :param x:
+        :param y:
+        :return:
+        """
         self._model.fit(x, y)
 
     def predict(self, x):
+        """
+
+        :param x:
+        :return:
+        """
         return self._model.predict(x)
 
     def predict_proba(self, x):
+        """
+
+        :param x:
+        :return:
+        """
         return self._model.predict(x)
 
     def save(self, path):
+        """
+
+        :param path:
+        :return:
+        """
         joblib.dump(self._model, path)
 
     def load(self, path):
+        """
+
+        :param path:
+        :return:
+        """
         self._model = joblib.load(path)
 
 

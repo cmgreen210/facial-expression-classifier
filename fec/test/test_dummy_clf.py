@@ -5,6 +5,10 @@ import numpy as np
 
 class DummyClassifierTest(unittest.TestCase):
     def test_dummy_classifier(self):
+        """Test dummy classifier
+
+        :return:
+        """
         n = 10
         dummy = DummyClassifier(n)
 
