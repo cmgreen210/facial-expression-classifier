@@ -3,7 +3,6 @@ import graphlab as gl
 
 class GraphLabNeuralNetBuilder(object):
     """Wrapper for GraphLab NeuralNet class to ease construction of NN
-
     """
     def __init__(self):
         self.layers = list()
