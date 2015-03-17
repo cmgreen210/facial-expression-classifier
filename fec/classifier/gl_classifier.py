@@ -6,8 +6,14 @@ from math import floor
 
 
 class GraphLabClassifierFromFile(ClassifierBase):
-    """
+    """This class wraps GraphLab's model class
 
+    The model must be loaded from a file, i.e. the model must've already been
+    fitted in graphlab.
+
+    Parameters
+    ----------
+    model_path: path to the GraphLab model files
     """
     def __init__(self, model_path):
         if not os.path.exists(model_path):
@@ -17,7 +23,7 @@ class GraphLabClassifierFromFile(ClassifierBase):
         self._num_class = self._model['num_classes']
 
     def fit(self, x, y):
-        """
+        """Does nothing! Internal model is assumed to have been already fitted
 
         :param x:
         :param y:
@@ -26,25 +32,37 @@ class GraphLabClassifierFromFile(ClassifierBase):
         pass
 
     def predict(self, x):
-        """
+        """Make prediction from features
 
-        :param x:
-        :return:
+        :param x: feature matrix
+        :return: array of class predictions
         """
         return self._model.predict(x)
 
     def predict_proba(self, x):
-        """
+        """Make predictions and probability estimates for input x
 
-        :param x:
-        :return:
+        :param x: feature matrix
+        :return: array of class predictions
         """
         return self._model.predict_topk(x, k=self._num_class)
 
 
 class GraphLabClassifierFromNetBuilder(ClassifierBase):
-    """
+    """Create a GraphLab classifier from a Neural Net builder
 
+    Parameters
+    ----------
+    net_builder: A GraphLabNeuralNetBuilder object with a valid net
+    train_frac: fraction of dataset used for training as opposed to validation
+    h: Height of images
+    w: Width of images
+    d: Depth of images
+    target: classification target name in SFrame
+    feat_name: Names of features in data SFrame
+    max_iterations: Number of iterations GraphLab solver will run
+    verbose: Output verbosity
+    chkpt_dir: Location to store intermediary models
     """
     def __init__(self, net_builder, train_frac=.8, h=48, w=48, depth=1,
                  target='label', feat_name='images',
@@ -102,12 +120,13 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         return (x[idx[:n_test], :], y[idx[:n_test]],
                 x[idx[n_test:], :], y[idx[n_test:]])
 
-    def fit(self, x, y, **kwargs):
-        """
+    def fit(self, x, y):
+        """Fit the GraphLab neural net classifer to the data
 
-        :param x:
-        :param y:
-        :param kwargs:
+        This method wraps graphlab.neuralnet_classifier.create
+
+        :param x: array of images
+        :param y: array of labels
         :return:
         """
         x_train, y_train, x_valid, y_valid = self._split(x, y)
@@ -144,31 +163,31 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         return sf
 
     def predict(self, x):
-        """
+        """Predict the image classes from input features
 
-        :param x:
+        :param x: feature matrix
         :return:
         """
         return self._model.predict(
             self._create_gl_feature_mat(x))
 
     def predict_proba(self, x, k=3):
-        """
+        """Predict image classes and class probabilites
 
-        :param x:
-        :param k:
-        :return:
+        :param x: image features
+        :param k: number of top class probabilities per image to return
+        :return: sframe of predictions and probabilities
         """
         return self._model.predict_topk(
             self._create_gl_feature_mat(x), k=k)
 
     def evaluate(self, x, y, metric='auto'):
-        """
+        """Evaluate the model performance on features x and labels y
 
-        :param x:
-        :param y:
-        :param metric:
-        :return:
+        :param x: images
+        :param y: labels for each image
+        :param metric: the GraphLab metric name(s) to use for evaluation
+        :return: dictionary of evaluation results
         """
         scale_x = self._scale_features(x)
         dataset = self._assemble_full_dataset(scale_x, y)
