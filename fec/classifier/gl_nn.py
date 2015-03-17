@@ -99,44 +99,37 @@ class GraphLabNeuralNetBuilder(object):
         return
 
     def add_relu_layer(self):
-        """
-
-        :return:
+        """Add a rectified linear activation unit to the network
         """
         self.layers.append(gl.deeplearning.layers.RectifiedLinearLayer())
         return
 
     def add_sigmoid_layer(self):
-        """
-
-        :return:
+        """Add a sigmoid activation layer to the network
         """
         self.layers.append(gl.deeplearning.layers.SigmoidLayer())
 
     def add_tanh_layer(self):
-        """
-
-        :return:
+        """Add a hyperbolic tangent layer to the network
         """
         self.layers.append(gl.deeplearning.layers.TanhLayer())
 
     def add_soft_plus_layer(self):
-        """
-
-        :return:
+        """Add a softplus activation layer to the network
         """
         self.layers.append(gl.deeplearning.layers.SoftplusLayer())
 
     def add_soft_max_layer(self):
-        """
-
-        :return:
+        """Add a softmax layer to the network
         """
         self.layers.append(gl.deeplearning.layers.SoftmaxLayer())
 
     def add_dropout_layer(self, threshold=0.5):
-        """
+        """Add a dropout layer to the network
 
+        Use this layer to avoid overfitting
+
+        :param threshold: probability of setting neuron to 0
         :return:
         """
         drop_layer = gl.deeplearning.layers.DropoutLayer(threshold)
@@ -149,9 +142,10 @@ class GraphLabNeuralNetBuilder(object):
         self.net.params[key] = value
 
     def set_params_from_file(self, path):
-        """
+        """Set the general network parameters from text file
 
-        :return:
+        Format is: key, val, [i,f,b,'']
+        for integer, float, binary and string values
         """
         with open(path) as f:
             for line in f:
