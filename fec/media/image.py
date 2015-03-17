@@ -4,8 +4,13 @@ import numpy as np
 
 
 class ImageFileClassifier(object):
-    """
+    """Classify stored images
 
+    Parameters
+    ----------
+    classifier: image classifier
+    image_processor: ImageProcessor object that processes any image before
+                     classification
     """
 
     def __init__(self, classifier, image_processor=FaceDetectorProcessor()):
@@ -13,13 +18,13 @@ class ImageFileClassifier(object):
         self._image_processor = image_processor
 
     def classify(self, path, h=48, w=48, channels=1):
-        """
+        """Classify the image
 
-        :param path:
-        :param h:
-        :param w:
-        :param channels:
-        :return:
+        :param path: path to image file
+        :param h: image height
+        :param w: image width
+        :param channels: number of channels for the image
+        :return: classifications
         """
         image = gl.Image(path)
         data = image.pixel_data.copy()
