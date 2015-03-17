@@ -40,7 +40,6 @@ class ClassifierBase(object):
 
 class DummyClassifier(ClassifierBase):
     """Dummy Clasiifier for testings
-
     """
     def __init__(self, n):
         self._n = n

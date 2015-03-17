@@ -6,20 +6,24 @@ from math import floor
 
 
 class ImageProcessor(object):
-    """
-
+    """Base class for image processing
     """
     def __init__(self):
         pass
 
     def process_image(self, image, *args):
+        """Returns image
+
+        :param image:
+        :param args:
+        :return: image the image you put in
+        """
         return image
 
     def save_image(self, image):
-        """
+        """Saves the image to a temporary directory relative to this file
 
-        :param image:
-        :return:
+        :param image: an openv image
         """
         file_name = os.path.dirname(__file__)
         dir_name = os.path.join(file_name, 'tmp')
@@ -32,18 +36,16 @@ class ImageProcessor(object):
 
 
 class GrayScaleProcessor(ImageProcessor):
-    """
-
+    """Extends the base processor by converting an image to grayscale
     """
     def __init__(self):
         pass
 
-    def process_image(self, image, *args):
-        """
+    def process_image(self, image):
+        """Convert the image to grayscale
 
-        :param image:
-        :param args:
-        :return:
+        :param image: image as an array
+        :return: image converted to grayscale
         """
 
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -52,14 +54,22 @@ class GrayScaleProcessor(ImageProcessor):
 
 
 class ResizeProcessor(ImageProcessor):
-    """
+    """A simple image resizer
 
+    Parameters
+    ----------
+    :param dim: resize dimensions
+    :param interp: cv interpolation enum
     """
     def __init__(self, dim=(48, 48), interp=cv2.INTER_AREA):
         self.dim = dim
         self.interp = interp
 
-    def process_image(self, image, *args):
+    def process_image(self, image):
+        """Process the image by resizing
+
+        :param image: the image array
+        """
         dst = cv2.resize(image, self.dim,
                          interpolation=self.interp)
         return dst
