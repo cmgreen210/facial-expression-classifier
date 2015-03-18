@@ -4,11 +4,13 @@ import pandas as pd
 import numpy as np
 import sys
 from fec.classifier.gl_nn import GraphLabNeuralNetBuilder
-from fec.classifier.gl_classifier import GraphLabClassifierFromNetBuilder
-from sklearn.cross_validation import train_test_split
+from fec.classifier.gl_classifier import *
+from sklearn.cross_validation import train_test_split, KFold
 from sklearn.metrics import precision_score, f1_score
 from os.path import join as pjoin
+import os
 import StringIO
+import shutil
 
 
 def fix_net_conf(path):
@@ -36,9 +38,9 @@ def fix_net_conf(path):
 def assemble_data_frame(path):
     df = pd.read_pickle(path)
 
-    cond_happy = df['django_expression'] == 3
-    cond_sad = df['django_expression'] == 4
-    cond_surprise = df['django_expression'] == 5
+    cond_happy = df['emotion'] == 3
+    cond_sad = df['emotion'] == 4
+    cond_surprise = df['emotion'] == 5
 
     return df[cond_happy | cond_sad | cond_surprise]
 
@@ -59,48 +61,107 @@ if __name__ == '__main__':
 
     cross_validation = None
     if len(sys.argv) > 5:
-        cross_validation = int(sys.argv[6])
+        if sys.argv[5] != '':
+            cross_validation = int(sys.argv[5])
 
     df = assemble_data_frame(data_path)
 
     x = np.array(df['pixels'].tolist())
-    y = np.array(df['django_expression'].values)
+    y = np.array(df['emotion'].values)
 
-    xtrain, xtest, ytrain, ytest = train_test_split(x, y, train_size=.8)
+    xtrain, xtest, ytrain, ytest = train_test_split(x, y,
+                                                    train_size=.8,
+                                                    random_state=1)
 
     net_builder = GraphLabNeuralNetBuilder()
     net_builder.layers = net.layers
     net_builder.verify()
 
-    model = GraphLabClassifierFromNetBuilder(net_builder,
-                                             chkpt_dir=check_point_path,
-                                             max_iterations=max_iterations,
-                                             train_frac=.8)
-    model.fit(xtrain, ytrain)
+    if cross_validation is None:
 
-    eval = model.evaluate(xtest, ytest, metric=['accuracy', 'confusion_matrix',
-                                               'recall@1', 'recall@2'])
+        model = GraphLabClassifierFromNetBuilder(net_builder,
+                                                 chkpt_dir=check_point_path,
+                                                 max_iterations=max_iterations,
+                                                 train_frac=.8)
+        model.fit(xtrain, ytrain)
 
-    ypred = np.array(model.predict(xtest))
-    ytest = np.array(ytest)
+        eval = model.evaluate(xtest, ytest, metric=['accuracy', 'confusion_matrix',
+                                                    'recall@1', 'recall@2'])
 
-    test_f1 = f1_score(ytest, ypred)
-    test_precision = precision_score(ytest, ypred)
+        ypred = np.array(model.predict(xtest))
+        ytest = np.array(ytest)
 
-    result_file = open(pjoin(output_dir, 'results.txt'), 'w')
+        test_f1 = f1_score(ytest, ypred)
+        test_precision = precision_score(ytest, ypred)
 
-    write = lambda val: print(val, file=result_file)
-    write('accuracy, {0:1.6f}'.format(eval['accuracy']))
-    write('recall@1, {0:1.6f}'.format(eval['recall@1']))
-    write('recall@2, {0:1.6f}'.format(eval['recall@2']))
-    write('precision, {0:1.6f}'.format(test_precision))
-    write('f1, {0:1.6f}'.format(test_f1))
-    write('')
-    write('target_label, predicted_label, count')
-    for row in eval['confusion_matrix']:
-        write('{0}, {1}, {2}'.format(
-            row['target_label'],
-            row['predicted_label'],
-            row['count']
-        ))
-    result_file.close()
+        result_file = open(pjoin(output_dir, 'results.txt'), 'w')
+
+        write = lambda val: print(val, file=result_file)
+        write('accuracy, {0:1.6f}'.format(eval['accuracy']))
+        write('recall@1, {0:1.6f}'.format(eval['recall@1']))
+        write('recall@2, {0:1.6f}'.format(eval['recall@2']))
+        write('precision, {0:1.6f}'.format(test_precision))
+        write('f1, {0:1.6f}'.format(test_f1))
+        write('')
+        write('target_label, predicted_label, count')
+        for row in eval['confusion_matrix']:
+            write('{0}, {1}, {2}'.format(
+                row['target_label'],
+                row['predicted_label'],
+                row['count']
+            ))
+        result_file.close()
+    else:
+        kf = KFold(xtrain.shape[0], n_folds=cross_validation)
+        count = 1
+        result_file = open(pjoin(output_dir, 'results.txt'), 'w')
+        write = lambda val: print(val, file=result_file)
+        for train, validation in kf:
+
+            kf_chkpt = pjoin(check_point_path, "kv_" + str(count))
+            if os.path.exists(kf_chkpt):
+                shutil.rmtree(kf_chkpt)
+            os.mkdir(kf_chkpt)
+
+            kf_final = pjoin(check_point_path, "kv_" + str(count) + "_final")
+            if os.path.exists(kf_final):
+                shutil.rmtree(kf_final)
+            os.mkdir(kf_final)
+
+            model = GraphLabClassifierFromNetBuilder(
+                net_builder,
+                chkpt_dir=kf_chkpt,
+                max_iterations=max_iterations,
+                validation_set=(xtrain[validation], ytrain[validation]))
+            model.fit(xtrain[train], ytrain[train])
+
+            eval = model.evaluate(xtest, ytest, metric=['accuracy',
+                                                        'confusion_matrix',
+                                                        'recall@1',
+                                                        'recall@2'])
+
+            ypred = np.array(model.predict(xtest))
+            ytest = np.array(ytest)
+
+            test_f1 = f1_score(ytest, ypred)
+            test_precision = precision_score(ytest, ypred)
+
+            write('accuracy, {0:1.6f}'.format(eval['accuracy']))
+            write('recall@1, {0:1.6f}'.format(eval['recall@1']))
+            write('recall@2, {0:1.6f}'.format(eval['recall@2']))
+            write('precision, {0:1.6f}'.format(test_precision))
+            write('f1, {0:1.6f}'.format(test_f1))
+            write('')
+            write('target_label, predicted_label, count')
+            for row in eval['confusion_matrix']:
+                write('{0}, {1}, {2}'.format(
+                    row['target_label'],
+                    row['predicted_label'],
+                    row['count']
+                ))
+            write('')
+            count += 1
+
+            model.save(kf_final)
+
+        result_file.close()

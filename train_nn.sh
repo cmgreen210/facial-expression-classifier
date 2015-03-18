@@ -10,6 +10,7 @@ MAX_IT=$2
 DATA=$3
 EMAIL=$4
 BUCKET=$5
+CV=$6
 
 PY='/usr/bin/python'
 
@@ -27,6 +28,7 @@ fi
 mkdir "${OUT_DIR}"
 mkdir "${OUT_DIR}/chkpt"
 
+echo "Saving data to: $(pwd)/${OUT_DIR}"
 
 PARAMS="${OUT_DIR}/net.conf"
 cp "${MODEL}" "${OUT_DIR}/net.conf"
@@ -34,7 +36,7 @@ cp "${MODEL}" "${OUT_DIR}/net.conf"
 OUTPUT="${OUT_DIR}/output.txt"
 
 ${PY} train_nn.py \
-    "${PARAMS}" "${OUT_DIR}" "${DATA}" "${MAX_IT}"\
+    "${PARAMS}" "${OUT_DIR}" "${DATA}" "${MAX_IT}" "${CV}"\
 > "${OUTPUT}"
 
 TAR_OUTPUT="${OUT_DIR}.tar.gz"

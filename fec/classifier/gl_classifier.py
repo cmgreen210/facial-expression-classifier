@@ -3,6 +3,8 @@ import os
 import graphlab as gl
 import numpy as np
 from math import floor
+import cPickle as pickle
+import shutil
 
 
 class GraphLabClassifierFromFile(ClassifierBase):
@@ -202,3 +204,27 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         scale_x = self._scale_features(x)
         dataset = self._assemble_full_dataset(scale_x, y)
         return self._model.evaluate(dataset, metric=metric)
+
+    def save(self, directory):
+        """Save model to directory
+
+        """
+        if os.path.exists(directory):
+            shutil.rmtree(directory)
+        os.mkdir(directory)
+        gl_path = os.path.join(directory, 'gl')
+        os.mkdir(gl_path)
+        self._model.save(gl_path)
+        self._model = None
+        path = os.path.join(directory, 'model.pkl')
+        with open(path, 'wb') as f:
+            pickle.dump(self, f, -1)
+
+
+def load_gl_from_net_builder(directory):
+    path = os.path.join(directory, 'model.pkl')
+    model = pickle.load(open(path))
+    gl_path = os.path.join(directory, 'gl')
+    gl_model = gl.load_model(gl_path)
+    model._model = gl_model
+    return model
