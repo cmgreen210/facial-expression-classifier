@@ -7,6 +7,15 @@ import cPickle as pickle
 import shutil
 
 
+def load_gl_from_net_builder(directory):
+    path = os.path.join(directory, 'model.pkl')
+    model = pickle.load(open(path))
+    gl_path = os.path.join(directory, 'gl')
+    gl_model = gl.load_model(gl_path)
+    model._model = gl_model
+    return model
+
+
 class GraphLabClassifierFromFile(ClassifierBase):
     """This class wraps GraphLab's model class
 
@@ -18,11 +27,22 @@ class GraphLabClassifierFromFile(ClassifierBase):
     model_path: path to the GraphLab model files
     """
     def __init__(self, model_path):
+        self._model = None
+        self._num_class = -1
         if not os.path.exists(model_path):
             raise ValueError("Model path does not exist!")
 
-        self._model = gl.load_model(model_path)
-        self._num_class = self._model['num_classes']
+        paths = [os.path.join(model_path, f) for f in os.listdir(model_path)]
+        check_dirs = [p for p in paths if os.isdir(p)]
+        self._is_ensemble = False
+        if len(check_dirs) == 0:
+            self._model = gl.load_model(model_path)
+            self._num_class = self._model['num_classes']
+        else:
+            self._is_ensemble = True
+            self._model = [load_gl_from_net_builder(d)
+                           for d in check_dirs]
+            self._num_class = self._model[0].get_num_classes()
 
     def fit(self, x, y):
         """Does nothing! Internal model is assumed to have been already fitted
@@ -33,13 +53,24 @@ class GraphLabClassifierFromFile(ClassifierBase):
         """
         pass
 
+    def _predict_proba_agg(self, x):
+        sf = gl.SFrame()
+        for m in self._model:
+            sf = sf.append(m.predict_proba(x, k=self._num_class))
+        sf_agg = sf.groupby(key_columns=['row_id', 'class'],
+                            operations={'score': gl.aggregate.SUM('score')})
+        return sf_agg
+
     def predict(self, x):
         """Make prediction from features
 
         :param x: feature matrix
         :return: array of class predictions
         """
-        return self._model.predict(x)
+        if not self._is_ensemble:
+            return self._model.predict(x)
+
+        sf = gl.SFrame()
 
     def predict_proba(self, x):
         """Make predictions and probability estimates for input x
@@ -47,8 +78,10 @@ class GraphLabClassifierFromFile(ClassifierBase):
         :param x: feature matrix
         :return: array of class predictions
         """
-        return self._model.predict_topk(x, k=self._num_class)
+        if not self._is_ensemble:
+            return self._model.predict_topk(x, k=self._num_class)
 
+        return self._predict_proba_agg(x)
 
 class GraphLabClassifierFromNetBuilder(ClassifierBase):
     """Create a GraphLab classifier from a Neural Net builder
@@ -80,6 +113,8 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         self._feat_means = None
         self._feat_std = None
 
+        self._num_classes = 0
+
         self._h = h
         self._w = w
         self._d = depth
@@ -92,6 +127,9 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         self._verbose = verbose
         self._chkpt_dir = chkpt_dir
         self._train_frac = train_frac
+
+    def get_num_classes(self):
+        return self._num_classes
 
     def _create_images(self, x):
         sarray = gl.SArray(x)
@@ -136,8 +174,9 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         :param y: array of labels
         :return:
         """
+        x_copy = np.copy(x)
         if self._validation_set is None:
-            x_train, y_train, x_valid, y_valid = self._split(x, y)
+            x_train, y_train, x_valid, y_valid = self._split(x_copy, y)
         else:
             x_train = x
             y_train = y
@@ -146,6 +185,7 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
 
         self._feat_means = np.mean(x_train, axis=0)
         self._feat_std = np.std(x_train, axis=0)
+        self._num_classes = len(np.unique(y_train))
 
         x_train = self._scale_features(x_train)
         x_valid = self._scale_features(x_valid)
@@ -190,8 +230,9 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         :param k: number of top class probabilities per image to return
         :return: sframe of predictions and probabilities
         """
+        x_copy = np.copy(x)
         return self._model.predict_topk(
-            self._create_gl_feature_mat(x), k=k)
+            self._create_gl_feature_mat(x_copy), k=k)
 
     def evaluate(self, x, y, metric='auto'):
         """Evaluate the model performance on features x and labels y
@@ -201,6 +242,7 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         :param metric: the GraphLab metric name(s) to use for evaluation
         :return: dictionary of evaluation results
         """
+        x_copy = np.copy(x)
         scale_x = self._scale_features(x)
         dataset = self._assemble_full_dataset(scale_x, y)
         return self._model.evaluate(dataset, metric=metric)
@@ -219,12 +261,3 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         path = os.path.join(directory, 'model.pkl')
         with open(path, 'wb') as f:
             pickle.dump(self, f, -1)
-
-
-def load_gl_from_net_builder(directory):
-    path = os.path.join(directory, 'model.pkl')
-    model = pickle.load(open(path))
-    gl_path = os.path.join(directory, 'gl')
-    gl_model = gl.load_model(gl_path)
-    model._model = gl_model
-    return model
