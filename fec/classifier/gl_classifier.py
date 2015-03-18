@@ -33,7 +33,7 @@ class GraphLabClassifierFromFile(ClassifierBase):
             raise ValueError("Model path does not exist!")
 
         paths = [os.path.join(model_path, f) for f in os.listdir(model_path)]
-        check_dirs = [p for p in paths if os.isdir(p)]
+        check_dirs = [p for p in paths if os.path.isdir(p)]
         self._is_ensemble = False
         if len(check_dirs) == 0:
             self._model = gl.load_model(model_path)
@@ -42,6 +42,7 @@ class GraphLabClassifierFromFile(ClassifierBase):
             self._is_ensemble = True
             self._model = [load_gl_from_net_builder(d)
                            for d in check_dirs]
+            self._num_models = len(self._model)
             self._num_class = self._model[0].get_num_classes()
 
     def fit(self, x, y):
@@ -59,6 +60,7 @@ class GraphLabClassifierFromFile(ClassifierBase):
             sf = sf.append(m.predict_proba(x, k=self._num_class))
         sf_agg = sf.groupby(key_columns=['row_id', 'class'],
                             operations={'score': gl.aggregate.SUM('score')})
+        sf_agg['score'] /= self._num_models
         return sf_agg
 
     def predict(self, x):
@@ -113,8 +115,6 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         self._feat_means = None
         self._feat_std = None
 
-        self._num_classes = 0
-
         self._h = h
         self._w = w
         self._d = depth
@@ -129,7 +129,7 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         self._train_frac = train_frac
 
     def get_num_classes(self):
-        return self._num_classes
+        return self._model['num_classes']
 
     def _create_images(self, x):
         sarray = gl.SArray(x)
@@ -185,7 +185,6 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
 
         self._feat_means = np.mean(x_train, axis=0)
         self._feat_std = np.std(x_train, axis=0)
-        self._num_classes = len(np.unique(y_train))
 
         x_train = self._scale_features(x_train)
         x_valid = self._scale_features(x_valid)
@@ -221,7 +220,7 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         :return:
         """
         return self._model.predict(
-            self._create_gl_feature_mat(x))
+            self._create_gl_feature_mat(np.copy(x)))
 
     def predict_proba(self, x, k=3):
         """Predict image classes and class probabilites
@@ -243,7 +242,7 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         :return: dictionary of evaluation results
         """
         x_copy = np.copy(x)
-        scale_x = self._scale_features(x)
+        scale_x = self._scale_features(x_copy)
         dataset = self._assemble_full_dataset(scale_x, y)
         return self._model.evaluate(dataset, metric=metric)
 
