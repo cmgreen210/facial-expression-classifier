@@ -149,7 +149,10 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         x_min = np.min(x)
         x_max = np.max(x)
 
-        return 255 * (x - x_min) / (x_max - x_min)
+        out = 255 * (x - x_min) / (x_max - x_min)
+        out[out > 255] = 255.
+        out[out < 0] = 0.
+        return out
 
     def _assemble_full_dataset(self, x, y):
         images = self._create_images(x)
