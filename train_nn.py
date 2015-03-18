@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     xtrain, xtest, ytrain, ytest = train_test_split(x, y,
                                                     train_size=.8,
-                                                    random_state=1002)
+                                                    random_state=1)
 
     net_builder = GraphLabNeuralNetBuilder()
     net_builder.layers = net.layers
@@ -111,6 +111,9 @@ if __name__ == '__main__':
                 row['count']
             ))
         result_file.close()
+        final = os.path.join(check_point_path, 'final')
+        os.mkdir(final)
+        model.save(final)
     else:
         kf = KFold(xtrain.shape[0], n_folds=cross_validation)
         count = 1

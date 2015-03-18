@@ -26,20 +26,20 @@ class GraphLabClassifierFromFile(ClassifierBase):
     ----------
     model_path: path to the GraphLab model files
     """
-    def __init__(self, model_path):
+    def __init__(self, model_path, is_ensemble=False):
         self._model = None
         self._num_class = -1
         if not os.path.exists(model_path):
             raise ValueError("Model path does not exist!")
 
-        paths = [os.path.join(model_path, f) for f in os.listdir(model_path)]
-        check_dirs = [p for p in paths if os.path.isdir(p)]
-        self._is_ensemble = False
-        if len(check_dirs) == 0:
-            self._model = gl.load_model(model_path)
-            self._num_class = self._model['num_classes']
+        self._is_ensemble = is_ensemble
+        if not self._is_ensemble:
+            print "loading gl from file..."
+            self._model = load_gl_from_net_builder(model_path)
+            self._num_class = self._model.get_num_classes()
         else:
-            self._is_ensemble = True
+            paths = [os.path.join(model_path, f) for f in os.listdir(model_path)]
+            check_dirs = [p for p in paths if os.path.isdir(p)]
             self._model = [load_gl_from_net_builder(d)
                            for d in check_dirs]
             self._num_models = len(self._model)
@@ -72,7 +72,7 @@ class GraphLabClassifierFromFile(ClassifierBase):
         if not self._is_ensemble:
             return self._model.predict(x)
 
-        sf = gl.SFrame()
+
 
     def predict_proba(self, x):
         """Make predictions and probability estimates for input x
@@ -175,11 +175,12 @@ class GraphLabClassifierFromNetBuilder(ClassifierBase):
         :return:
         """
         x_copy = np.copy(x)
+        y_copy = np.copy(y)
         if self._validation_set is None:
-            x_train, y_train, x_valid, y_valid = self._split(x_copy, y)
+            x_train, y_train, x_valid, y_valid = self._split(x_copy, y_copy)
         else:
-            x_train = x
-            y_train = y
+            x_train = x_copy
+            y_train = y_copy
             x_valid = self._validation_set[0]
             y_valid = self._validation_set[1]
 
