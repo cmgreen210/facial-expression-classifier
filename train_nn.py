@@ -70,8 +70,8 @@ if __name__ == '__main__':
     y = np.array(df['emotion'].values)
 
     xtrain, xtest, ytrain, ytest = train_test_split(x, y,
-                                                    train_size=.8,
-                                                    random_state=1)
+                                                    train_size=.9,
+                                                    random_state=4)
 
     net_builder = GraphLabNeuralNetBuilder()
     net_builder.layers = net.layers
@@ -132,19 +132,21 @@ if __name__ == '__main__':
                 net_builder,
                 chkpt_dir=kf_chkpt,
                 max_iterations=max_iterations,
-                validation_set=(xtrain[validation], ytrain[validation]))
-            model.fit(xtrain[train], ytrain[train])
+                validation_set=(np.copy(xtrain[validation]), np.copy(ytrain[validation])))
 
-            eval = model.evaluate(xtest, ytest, metric=['accuracy',
-                                                        'confusion_matrix',
-                                                        'recall@1',
-                                                        'recall@2'])
+            model.fit(np.copy(xtrain[train]), np.copy(ytrain[train]))
+
+            eval = model.evaluate(np.copy(xtest), np.copy(ytest),
+                                  metric=['accuracy',
+                                          'confusion_matrix',
+                                          'recall@1',
+                                          'recall@2'])
 
             ypred = np.array(model.predict(xtest))
-            ytest = np.array(ytest)
+            ytest_arr = np.array(ytest)
 
-            test_f1 = f1_score(ytest, ypred)
-            test_precision = precision_score(ytest, ypred)
+            test_f1 = f1_score(ytest_arr, ypred)
+            test_precision = precision_score(ytest_arr, ypred)
 
             write('accuracy, {0:1.6f}'.format(eval['accuracy']))
             write('recall@1, {0:1.6f}'.format(eval['recall@1']))
