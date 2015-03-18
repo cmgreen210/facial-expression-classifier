@@ -44,6 +44,7 @@ class ImageFileClassifier(object):
         face_arr = gl.SArray([face.tolist()])
         clf_image = face_arr.pixel_array_to_image(h, w, channels,
                                                   allow_rounding=True)
-        x = gl.SFrame({'images': clf_image})
+        # x = gl.SFrame({'images': clf_image})
+        x = np.expend_dims(face, axis=0)
         classifications = self._classifier(x)
         return image, clf_image[0], classifications
