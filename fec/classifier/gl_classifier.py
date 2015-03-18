@@ -81,7 +81,7 @@ class GraphLabClassifierFromFile(ClassifierBase):
         :return: array of class predictions
         """
         if not self._is_ensemble:
-            return self._model.predict_topk(x, k=self._num_class)
+            return self._model.predict_proba(x, k=self._num_class)
 
         return self._predict_proba_agg(x)
 
