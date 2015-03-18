@@ -70,8 +70,8 @@ if __name__ == '__main__':
     y = np.array(df['emotion'].values)
 
     xtrain, xtest, ytrain, ytest = train_test_split(x, y,
-                                                    train_size=.9,
-                                                    random_state=4)
+                                                    train_size=.8,
+                                                    random_state=1002)
 
     net_builder = GraphLabNeuralNetBuilder()
     net_builder.layers = net.layers
@@ -118,6 +118,11 @@ if __name__ == '__main__':
         write = lambda val: print(val, file=result_file)
         for train, validation in kf:
 
+            xtrain_kf = np.copy(xtrain)
+            ytrain_kf = np.copy(ytrain)
+            xtest_kf = np.copy(xtest)
+            ytest_kf = np.copy(ytest)
+
             kf_chkpt = pjoin(check_point_path, "kv_" + str(count))
             if os.path.exists(kf_chkpt):
                 shutil.rmtree(kf_chkpt)
@@ -132,18 +137,19 @@ if __name__ == '__main__':
                 net_builder,
                 chkpt_dir=kf_chkpt,
                 max_iterations=max_iterations,
-                validation_set=(np.copy(xtrain[validation]), np.copy(ytrain[validation])))
+                validation_set=(np.copy(xtrain_kf[validation]),
+                                np.copy(ytrain_kf[validation])))
 
-            model.fit(np.copy(xtrain[train]), np.copy(ytrain[train]))
+            model.fit(np.copy(xtrain_kf[train]), np.copy(ytrain_kf[train]))
 
-            eval = model.evaluate(np.copy(xtest), np.copy(ytest),
+            eval = model.evaluate(xtest_kf, ytest_kf,
                                   metric=['accuracy',
                                           'confusion_matrix',
                                           'recall@1',
                                           'recall@2'])
 
-            ypred = np.array(model.predict(xtest))
-            ytest_arr = np.array(ytest)
+            ypred = np.array(model.predict(xtest_kf))
+            ytest_arr = np.array(ytest_kf)
 
             test_f1 = f1_score(ytest_arr, ypred)
             test_precision = precision_score(ytest_arr, ypred)
