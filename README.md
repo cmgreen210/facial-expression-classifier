@@ -14,6 +14,7 @@ This package allows you to classify facial expressions in both images and video 
 
 <a name="overview"/>
 ##Overview
+Can a computer recognize how you're feeling? This is the question that this code tries to answer. It turns out...it's a hard problem but not impossible. This repo uses two main libraries. The first is GraphLab Create. This newly deployed python library has a very accessible deep learning package, a version of which is optimized for gpu's that greatly reduces training times. The second package is the widely used open source library OpenCV that is used for face detection, image processing, and interactions with video streams from both files and webcams. The functionality of this code in the static image case is showcased in a live web app [here][4]. In order to get into the nit and gritty of the library see the [usage](#usage) as well as the source code itself.
 
 <a name="install"/>
 ##Installation
