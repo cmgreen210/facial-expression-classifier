@@ -37,6 +37,7 @@ This package was written to classify human facial expressions. Data for this pro
 <a name="usage"/>
 ##Usage
 ###Train
+Script for running `train_nn.py` and saving all of the data:
 ```bash
 ./train_nn.sh net.conf 12 data/fer_data.pkl cmgreen210@gmail.com cmgreen210-emotions
 ```
