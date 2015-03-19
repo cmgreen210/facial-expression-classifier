@@ -34,7 +34,10 @@ This package was written to classify human facial expressions. Data for this pro
 
 <a name="usage"/>
 ##Usage
-
+###Train
+```bash
+./train_nn.sh net.conf 12 data/fer_data.pkl cmgreen210@gmail.com cmgreen210-emotions
+```
 
 [1]: http://www.opencv.org "OpenCV"
 [2]: https://dato.com/products/create/quick-start-guide.html "GraphLab"
