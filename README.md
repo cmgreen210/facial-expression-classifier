@@ -37,6 +37,8 @@ This package was written to classify human facial expressions. Data for this pro
 <a name="usage"/>
 ##Usage
 ###Data
+Scripts for [data][3] processing, saving, and uploading to AWS S3 can be found in `fec/classifier/gl_data.py`.
+
 ###Train
 Script for running `train_nn.py` and saving all of the data:
 ```bash
