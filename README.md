@@ -21,6 +21,11 @@ First, install [OpenCV][1] and register for [GraphLab][2]. After this is done ru
 git clone https://github.com/cmgreen210/facial-expression-classifier
 pip install -r requirements
 ```
+If all tests with the below command pass from the top level directory then you are good to go!
+```bash
+nosetests .
+```
+
 <a name="model"/>
 ##Model
 
