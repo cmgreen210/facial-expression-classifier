@@ -16,7 +16,10 @@ Chris Green, March 2015 :smile: :frowning: :open_mouth:
 
 <a name="install"/>
 ##Installation
+```bash
+git clone https://github.com/cmgreen210/facial-expression-classifier
 
+```
 <a name="model"/>
 ##Model
 
