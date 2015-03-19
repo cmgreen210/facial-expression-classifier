@@ -1,6 +1,5 @@
 import unittest
 from fec.classifier.gl_classifier import GraphLabClassifierFromFile
-import numpy as np
 import os
 import graphlab as gl
 
