@@ -45,8 +45,17 @@ Script for running `train_nn.py` and saving all of the data:
 ./train_nn.sh net.conf 12 data/fer_data.pkl cmgreen210@gmail.com cmgreen210-emotions
 ```
 ###Image
+See the image files in the folder `fec/media/` for the source code. Here's an example of how to call the image classification code:
+```python
+clf = GraphLabClassifierFromFile('/path/to/saved/graphlab/classifier')
+face_detector = FaceDetectorProcessor()
+
+image_classifier = ImageFileClassifier(clf.predict_proba, face_detector)
+
+image, gray_scaled, classifications = image_classifier.classify('/path/to/saved/image')
+```
 ###Video
-###Predict
+Frames from user provided video can also be analyzed for facial expressions. The video sources can be either from a file or from a live webcam. The source code can be found at `fec/media/video.py`.
 
 [1]: http://www.opencv.org "OpenCV"
 [2]: https://dato.com/products/create/quick-start-guide.html "GraphLab"
