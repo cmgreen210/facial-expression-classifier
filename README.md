@@ -55,7 +55,21 @@ image_classifier = ImageFileClassifier(clf.predict_proba, face_detector)
 image, gray_scaled, classifications = image_classifier.classify('/path/to/saved/image')
 ```
 ###Video
-Frames from user provided video can also be analyzed for facial expressions. The video sources can be either from a file or from a live webcam. The source code can be found at `fec/media/video.py`.
+Frames from user provided video can also be analyzed for facial expressions. The video sources can be either from a file or from a live webcam. The source code can be found at `fec/media/video.py`. Both classifiers inherit from a base class `VideoStreamClassifyBase` which takes care of multiprocessing to speed execution and, in the webcam case, allow a smooth video to be shown while capturing and classifying images. Example usage:
+```python
+# From file
+clf = GraphLabClassifierFromFile('/path/to/saved/graphlab/classifier')
+video_classifier = VideoFileClassifier(clf.predict_proba, '/path/to/video')
+video_classifier.start()
+classifications = video_classifier.get_classifications()
+orig, processed = video_classifier.get_final_images()
+
+# From webcam
+clf = GraphLabClassifierFromFile('/path/to/saved/graphlab/classifier')
+cam_classifier = CameraClassifier(clf.predict_proba, frame_skip=5)
+cam_classifier.start()
+classifications = cam_classifier.get_classifications()
+```
 
 [1]: http://www.opencv.org "OpenCV"
 [2]: https://dato.com/products/create/quick-start-guide.html "GraphLab"
