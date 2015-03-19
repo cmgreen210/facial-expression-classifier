@@ -28,6 +28,9 @@ nosetests .
 
 <a name="model"/>
 ##Model
+Each model in the package wraps GraphLab's `NeuralNetClassifier` except for the base logistic regression class which uses Scikit-Learn. The easiest way to train a feed forward neural net with this package is to specify an architecture in `net.conf` and then run the `train_nn.sh` script, specifying the appropriate argruments. You don't need to specify the connections between each layer of the net configuration because the training code assumes a linear order between layers.
+
+This package was written to classify human facial expressions. Data for this problem can be found [here][3]. In order to process and pickle the raw data files see code in `gl_data.py`. If you are experimenting it is recommended that you run your classifications with Dato's GraphLab Create™ with GPU Acceleration on a gpu to speed up your training.
 
 <a name="usage"/>
 ##Usage
@@ -35,3 +38,4 @@ nosetests .
 
 [1]: http://www.opencv.org "OpenCV"
 [2]: https://dato.com/products/create/quick-start-guide.html "GraphLab"
+[3]: https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data "Data"
