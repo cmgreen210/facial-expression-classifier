@@ -10,6 +10,7 @@ Chris Green, March 2015 :smile: :frowning: :open_mouth:
 
 <a name="tldr"/>
 ##TL;DR
+This package allows you to classify facial expressions in both images and video using deep learning. You'll need to have both [OpenCV][1] and [GraphLab][2] installed as well as other standard packages. The goal is to get a model to recognize human expressions. You can then embed this model in whatever system you're using whether that be a smart advertisement platform or a personal robot assistant who wants to know how your day has been.
 
 <a name="overview"/>
 ##Overview
